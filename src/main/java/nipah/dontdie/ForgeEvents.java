@@ -39,6 +39,9 @@ public final class ForgeEvents {
                         FirstAid.hurtSafePart(player, damagePerHit, rand);
                     }
                     else {
+                        if(player.getHealth() - damagePerHit <= 0) {
+                            return;
+                        }
                         player.hurt(damageSource, damagePerHit);
                     }
                     Dontdie.LOGGER.info("Player {} took {} damage on hit #{}.", player.getName().getString(), damagePerHit, finalI + 1);
