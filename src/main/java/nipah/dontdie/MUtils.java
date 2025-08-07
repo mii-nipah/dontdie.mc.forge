@@ -1,11 +1,13 @@
 package nipah.dontdie;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.Random;
@@ -13,7 +15,10 @@ import java.util.function.Predicate;
 
 public class MUtils {
     public static ResourceLocation ResLoc(String locationName) {
-        return new ResourceLocation(locationName);
+        return ResourceLocation.parse(locationName);
+    }
+    public static <T extends Registry<T>> ResourceKey<T> ResKey(ResourceLocation location, ResourceKey<? extends T> registry) {
+        return ResourceKey.create(registry, location);
     }
     public static int secondsToTicks(int seconds) {
         return seconds * 20;
@@ -50,8 +55,8 @@ public class MUtils {
         );
     }
     public static void notifyToast(ServerPlayer player, Component title, Component message) {
-        NetworkHandler.CHANNEL.send(
-            PacketDistributor.PLAYER.with(() -> player),
+        PacketDistributor.sendToPlayer(
+            player,
             new NetworkHandler.ToastMsg(title, message)
         );
     }

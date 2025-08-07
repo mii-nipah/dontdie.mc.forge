@@ -9,7 +9,7 @@ public final class ToastHelper {
     public static void show(Component title, Component subtitle) {
         Minecraft mc = Minecraft.getInstance();
         Toast toast = SystemToast.multiline(mc,
-            SystemToast.SystemToastIds.TUTORIAL_HINT, title, subtitle);
+            SystemToast.SystemToastId.PERIODIC_NOTIFICATION, title, subtitle);
         mc.getToasts().addToast(toast);
     }
 }

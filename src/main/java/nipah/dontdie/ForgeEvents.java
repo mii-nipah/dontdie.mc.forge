@@ -6,14 +6,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import nipah.dontdie.compats.FirstAid;
 
 import java.util.Random;
 
-@Mod.EventBusSubscriber(modid = Dontdie.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Dontdie.MODID)
 public final class ForgeEvents {
     static final Random rand = new Random();
 
@@ -56,7 +56,7 @@ public final class ForgeEvents {
                 continue;
             }
             if(!MUtils.testChance(rand, effectInfo.chance())) {
-                Dontdie.LOGGER.info("Skipping effect {} for player {} due to chance.", effectInfo.effect().getDisplayName().getString(), player.getName().getString());
+                Dontdie.LOGGER.info("Skipping effect {} for player {} due to chance.", effectInfo.effect().value().getDisplayName().getString(), player.getName().getString());
                 continue;
             }
             if (player.isAlive()) {
@@ -66,7 +66,7 @@ public final class ForgeEvents {
                 var duration = rand.nextInt(minDuration, maxDuration + 1);
                 var effect = new MobEffectInstance(mobEffect, duration);
                 player.addEffect(effect);
-                Dontdie.LOGGER.info("Player {} received effect {} for {} ticks.", player.getName().getString(), mobEffect.getDisplayName().getString(), duration);
+                Dontdie.LOGGER.info("Player {} received effect {} for {} ticks.", player.getName().getString(), mobEffect.value().getDisplayName().getString(), duration);
             }
         }
 

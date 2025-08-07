@@ -1,8 +1,8 @@
 package nipah.dontdie;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,8 +29,7 @@ public class TickScheduler {
     static final List<Task> toRemove = new ArrayList<>();
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent ev) {
-        if (ev.phase != TickEvent.Phase.END) return;
+    public static void onServerTick(ServerTickEvent.Post ev) {
         var server = ev.getServer();
         toRemove.clear();
         // decrement and run

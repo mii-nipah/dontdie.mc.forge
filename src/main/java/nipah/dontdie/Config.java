@@ -1,10 +1,40 @@
 package nipah.dontdie;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Set;
@@ -12,27 +42,27 @@ import java.util.stream.Collectors;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Forge's config APIs
-@Mod.EventBusSubscriber(modid = Dontdie.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Dontdie.MODID)
 public class Config
 {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.IntValue MAX_HITS = BUILDER
+    private static final ModConfigSpec.IntValue MAX_HITS = BUILDER
             .comment("Maximum number of hits the player will take after respawning.")
             .defineInRange("maxHits", 13, 0, Integer.MAX_VALUE);
-    private static final ForgeConfigSpec.IntValue MAX_DAMAGE = BUILDER
+    private static final ModConfigSpec.IntValue MAX_DAMAGE = BUILDER
             .comment("The maximum amount of damage the player will take on each hit.")
             .defineInRange("maxHitDamage", 3, 0, Integer.MAX_VALUE);
 
-    private static final ForgeConfigSpec.IntValue MIN_EFFECTS = BUILDER
+    private static final ModConfigSpec.IntValue MIN_EFFECTS = BUILDER
             .comment("Minimum number of effects to apply on death.")
             .defineInRange("minEffects", 1, 0, Integer.MAX_VALUE);
-    private static final ForgeConfigSpec.IntValue MAX_EFFECTS = BUILDER
+    private static final ModConfigSpec.IntValue MAX_EFFECTS = BUILDER
             .comment("Maximum number of effects to apply on death.")
             .defineInRange("maxEffects", 3, 0, Integer.MAX_VALUE);
 
     // a list of strings that are treated as resource locations for items
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DEATH_EFFECTS = BUILDER
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> DEATH_EFFECTS = BUILDER
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items",
                     List.of(
@@ -42,7 +72,7 @@ public class Config
                     ),
                     Config::validateEffectName);
 
-    static final ForgeConfigSpec SPEC = BUILDER.build();
+    static final IConfigSpec SPEC = BUILDER.build();
 
     public static int maxHits;
     public static int maxDamage;
@@ -70,7 +100,7 @@ public class Config
         if(!duration.matches("^\\d+-\\d+s"))
             return false;
         // check if the item exists in the registry
-        return ForgeRegistries.ITEMS.containsKey(MUtils.ResLoc(itemName));
+        return BuiltInRegistries.ITEM.containsKey(MUtils.ResLoc(itemName));
     }
     static EffectInfo parseEffect(String effectComposite) {
         var parts = effectComposite.split("\\|");
@@ -84,7 +114,8 @@ public class Config
         var minDuration = Integer.parseInt(durationParts[0].replace("s", ""));
         var maxDuration = Integer.parseInt(durationParts[1].replace("s", ""));
 
-        var effect = ForgeRegistries.MOB_EFFECTS.getValue(MUtils.ResLoc(itemName));
+        var effKey = ResourceKey.create(Registries.MOB_EFFECT, MUtils.ResLoc(itemName));
+        var effect = BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(effKey);
 
         return new EffectInfo(
             effect,
