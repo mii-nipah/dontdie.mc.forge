@@ -1,0 +1,46 @@
+name: Fabric
+
+on:
+  pull_request:
+    paths:
+      - 'fabric/**'
+      - 'gradle/**'
+      - 'gradlew*'
+      - '.github/workflows/fabric.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'fabric/**'
+      - 'gradle/**'
+      - 'gradlew*'
+      - '.github/workflows/fabric.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@4c125117fe7c5aed11272ec4213f602f012f89f2 # v5
+      - name: Build Fabric 1.20.1
+        run: bash ./gradlew -p fabric --no-daemon build
+      - name: Check dedicated-server initialization without accepting the EULA
+        shell: bash
+        run: |
+          mkdir -p fabric/run
+          printf 'eula=false\n' > fabric/run/eula.txt
+          timeout 180 bash ./gradlew -p fabric --no-daemon runServer --args=nogui 2>&1 | tee fabric-loader.log
+          grep -F 'You need to agree to the EULA' fabric-loader.log
+          grep -Fx 'eula=false' fabric/run/eula.txt
+          if grep -E 'Could not execute entrypoint|Failed to launch|Incompatible mods found|Mixin apply failed|NoClassDefFoundError|ClassNotFoundException' fabric-loader.log; then
+            exit 1
+          fi
