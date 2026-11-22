@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import nipah.dontdie.RespawnNotice;
 
 public final class ToastPacket {
-    public static final ResourceLocation ID = new ResourceLocation(DontdieFabric.MOD_ID, "toast");
+    public static final ResourceLocation ID = new ResourceLocation(FabricEvents.MOD_ID, "toast");
 
     static void send(ServerPlayer player) {
         if (ServerPlayNetworking.canSend(player, ID)) {

@@ -1,11 +1,12 @@
-plugins {
-    id 'fabric-loom' version '1.7.4'
-}
-
 version = "${mod_version}+${minecraft_version}"
 
 repositories {
     mavenCentral()
+}
+
+sourceSets.main {
+    java.srcDir rootProject.file('fabric/src/main/java')
+    resources.srcDir rootProject.file('fabric/src/main/resources')
 }
 
 loom {

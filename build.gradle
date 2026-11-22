@@ -1,5 +1,6 @@
 plugins {
     id 'base'
+    id 'fabric-loom' version '1.7.4' apply false
 }
 
 defaultTasks 'build'
@@ -46,4 +47,9 @@ subprojects {
             from rootProject.file('LICENSE')
         }
     }
+}
+
+configure(subprojects.findAll { it.name.startsWith('fabric-') }) {
+    apply plugin: 'fabric-loom'
+    apply from: rootProject.file('gradle/fabric.gradle')
 }

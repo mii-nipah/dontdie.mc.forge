@@ -3,6 +3,7 @@ name: Fabric
 on:
   pull_request:
     paths:
+      - 'fabric/**'
       - 'fabric-*/**'
       - 'forge-*/**'
       - 'neoforge-*/**'
@@ -16,6 +17,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'fabric/**'
       - 'fabric-*/**'
       - 'forge-*/**'
       - 'neoforge-*/**'
@@ -50,11 +52,13 @@ jobs:
       - name: Check dedicated-server initialization without accepting the EULA
         shell: bash
         run: |
-          mkdir -p fabric-1.20.1/run
-          printf 'eula=false\n' > fabric-1.20.1/run/eula.txt
-          timeout 180 bash ./gradlew :fabric-1.20.1:runServer --no-daemon --args=nogui 2>&1 | tee fabric-loader.log
-          grep -F 'You need to agree to the EULA' fabric-loader.log
-          grep -Fx 'eula=false' fabric-1.20.1/run/eula.txt
-          if grep -E 'Could not execute entrypoint|Failed to launch|Incompatible mods found|Mixin apply failed|NoClassDefFoundError|ClassNotFoundException' fabric-loader.log; then
-            exit 1
-          fi
+          for target in fabric-1.20.1 fabric-1.21.1; do
+            mkdir -p "$target/run"
+            printf 'eula=false\n' > "$target/run/eula.txt"
+            timeout 180 bash ./gradlew ":$target:runServer" --no-daemon --args=nogui 2>&1 | tee "$target-loader.log"
+            grep -F 'You need to agree to the EULA' "$target-loader.log"
+            grep -Fx 'eula=false' "$target/run/eula.txt"
+            if grep -E 'Could not execute entrypoint|Failed to launch|Incompatible mods found|Mixin apply failed|NoClassDefFoundError|ClassNotFoundException' "$target-loader.log"; then
+              exit 1
+            fi
+          done
