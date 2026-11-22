@@ -3,16 +3,28 @@ name: Fabric
 on:
   pull_request:
     paths:
-      - 'fabric/**'
+      - 'fabric-*/**'
+      - 'forge-*/**'
+      - 'neoforge-*/**'
+      - 'common/**'
+      - '*.gradle'
+      - 'gradle.properties'
       - 'gradle/**'
       - 'gradlew*'
+      - 'LICENSE'
       - '.github/workflows/fabric.yml'
   push:
     branches: [main]
     paths:
-      - 'fabric/**'
+      - 'fabric-*/**'
+      - 'forge-*/**'
+      - 'neoforge-*/**'
+      - 'common/**'
+      - '*.gradle'
+      - 'gradle.properties'
       - 'gradle/**'
       - 'gradlew*'
+      - 'LICENSE'
       - '.github/workflows/fabric.yml'
 
 permissions:
@@ -29,18 +41,20 @@ jobs:
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: |
+            17
+            21
       - uses: gradle/actions/setup-gradle@4c125117fe7c5aed11272ec4213f602f012f89f2 # v5
-      - name: Build Fabric 1.20.1
-        run: bash ./gradlew -p fabric --no-daemon build
+      - name: Build all targets
+        run: bash ./gradlew build --no-daemon
       - name: Check dedicated-server initialization without accepting the EULA
         shell: bash
         run: |
-          mkdir -p fabric/run
-          printf 'eula=false\n' > fabric/run/eula.txt
-          timeout 180 bash ./gradlew -p fabric --no-daemon runServer --args=nogui 2>&1 | tee fabric-loader.log
+          mkdir -p fabric-1.20.1/run
+          printf 'eula=false\n' > fabric-1.20.1/run/eula.txt
+          timeout 180 bash ./gradlew :fabric-1.20.1:runServer --no-daemon --args=nogui 2>&1 | tee fabric-loader.log
           grep -F 'You need to agree to the EULA' fabric-loader.log
-          grep -Fx 'eula=false' fabric/run/eula.txt
+          grep -Fx 'eula=false' fabric-1.20.1/run/eula.txt
           if grep -E 'Could not execute entrypoint|Failed to launch|Incompatible mods found|Mixin apply failed|NoClassDefFoundError|ClassNotFoundException' fabric-loader.log; then
             exit 1
           fi
