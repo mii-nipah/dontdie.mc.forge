@@ -18,6 +18,14 @@ public final class ForgeEvents {
     static final Random rand = new Random();
 
     @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone e) {
+        if (!e.isWasDeath() || !(e.getEntity() instanceof ServerPlayer player) || player.isSpectator()) {
+            return;
+        }
+        HungerRestoration.restore(e.getOriginal().getFoodData(), player.getFoodData(), Config.hungerLostOnDeath);
+    }
+
+    @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer player) || player.isSpectator()) {
             return;

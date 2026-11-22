@@ -31,6 +31,10 @@ public class Config
             .comment("Maximum number of effects to apply on death.")
             .defineInRange("maxEffects", 3, 0, Integer.MAX_VALUE);
 
+    private static final ForgeConfigSpec.IntValue HUNGER_LOST_ON_DEATH = BUILDER
+            .comment("Hunger lost on death.")
+            .defineInRange("hungerLostOnDeath", 0, 0, 20);
+
     // a list of strings that are treated as resource locations for items
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DEATH_EFFECTS = BUILDER
             .comment("A list of items to log on common setup.")
@@ -49,6 +53,7 @@ public class Config
 
     public static int minEffects;
     public static int maxEffects;
+    public static int hungerLostOnDeath;
     public static List<EffectInfo> deathEffects;
 
     private static boolean validateEffectName(final Object obj)
@@ -102,6 +107,7 @@ public class Config
 
         minEffects = MIN_EFFECTS.get();
         maxEffects = MAX_EFFECTS.get();
+        hungerLostOnDeath = HUNGER_LOST_ON_DEATH.get();
         // convert the list of strings into a list of effect infos
         deathEffects = DEATH_EFFECTS.get().stream()
             .map(Config::parseEffect)
