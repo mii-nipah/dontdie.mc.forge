@@ -34,3 +34,9 @@ neoForge {
 }
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
+
+apply from: rootProject.file('gradle/first-aid.gradle')
+
+dependencies {
+    compileOnly "maven.modrinth:first-aid-new:${first_aid_new_version_id}"
+}

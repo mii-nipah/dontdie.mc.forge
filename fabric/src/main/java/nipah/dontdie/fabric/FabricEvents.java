@@ -20,8 +20,12 @@ import java.util.function.IntFunction;
 final class FabricEvents {
     static final String MOD_ID = "dontdie";
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    private final DeathPenalty penalty = new DeathPenalty(DeathPenalty::vanillaHit);
+    private final DeathPenalty penalty;
     private Settings config;
+
+    FabricEvents(DeathPenalty.Hit hit) {
+        penalty = new DeathPenalty(hit);
+    }
 
     void register(Function<ResourceLocation, IntFunction<MobEffectInstance>> findEffect, Consumer<ServerPlayer> sendToast) {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {

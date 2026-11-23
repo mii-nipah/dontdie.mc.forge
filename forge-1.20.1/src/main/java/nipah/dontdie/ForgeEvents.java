@@ -11,13 +11,7 @@ import nipah.dontdie.compats.FirstAid;
 
 @Mod.EventBusSubscriber(modid = Dontdie.MODID)
 public final class ForgeEvents {
-    private static final DeathPenalty PENALTY = new DeathPenalty((player, damage, random) -> {
-        if (ModList.get().isLoaded("firstaid")) {
-            FirstAid.hurtSafePart(player, damage, random);
-        } else {
-            DeathPenalty.vanillaHit(player, damage, random);
-        }
-    });
+    private static final DeathPenalty PENALTY = new DeathPenalty(FirstAid.hit(ModList.get()::isLoaded));
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {

@@ -30,6 +30,8 @@ minecraft {
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+apply from: rootProject.file('gradle/first-aid.gradle')
+
 repositories {
     maven { url = 'https://cursemaven.com' }
 }

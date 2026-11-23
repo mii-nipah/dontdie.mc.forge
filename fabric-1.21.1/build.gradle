@@ -1,0 +1,7 @@
+apply from: rootProject.file('gradle/first-aid.gradle')
+
+dependencies {
+    // Loom 1.7 can't remap the Fabric build (Loom 1.14). The NeoForge build has the same API,
+    // already in Mojang mappings, and remapJar translates our calls to intermediary.
+    compileOnly "maven.modrinth:first-aid-new:${first_aid_new_version_id}"
+}

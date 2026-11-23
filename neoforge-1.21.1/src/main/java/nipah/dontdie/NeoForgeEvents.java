@@ -2,14 +2,16 @@ package nipah.dontdie;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import nipah.dontdie.compats.FirstAid;
 
 @EventBusSubscriber(modid = Dontdie.MODID)
 public final class NeoForgeEvents {
-    private static final DeathPenalty PENALTY = new DeathPenalty(DeathPenalty::vanillaHit);
+    private static final DeathPenalty PENALTY = new DeathPenalty(FirstAid.hit(ModList.get()::isLoaded));
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {

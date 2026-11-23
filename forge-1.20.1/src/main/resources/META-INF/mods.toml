@@ -61,3 +61,10 @@ mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "firstaid"
+mandatory = false
+# Forge rejects every version when the range is omitted
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"

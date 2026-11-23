@@ -11,4 +11,4 @@ All supported versions build from the same checkout. Use `./gradlew build` with 
 
 Use `./gradlew :fabric-1.21.1:build` to build just Fabric 1.21.1. Each target also has a `runClient` and `runServer` task, for example `./gradlew :neoforge-1.21.1:runServer`.
 
-Death penalties and translations live in `common/`. Fabric uses `config/dontdie.json` and requires Fabric API. Forge and NeoForge use `config/dontdie-common.toml`. First Aid integration is available on Forge 1.20.1.
+Death penalties and translations live in `common/`. Fabric uses `config/dontdie.json` and requires Fabric API. Forge and NeoForge use `config/dontdie-common.toml`. Optional integration is available for [First Aid New](https://modrinth.com/mod/first-aid-new) on Forge 1.20.1, Fabric 1.21.1, and NeoForge 1.21.1, and for the original [First Aid](https://modrinth.com/mod/firstaid) on Forge 1.20.1. With either mod installed, penalty hits injure random body parts, but the hits themselves never kill or knock the player out; otherwise, dontdie works the same. Fabric 1.20.1 has no First Aid integration because no First Aid New build exists for it.
